@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(VIEWER)
+  status       Status        @default(ACTIVE)
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+}
+
+enum Role {
+  VIEWER
+  ANALYST
+  ADMIN
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  amount      Decimal
+  type        TransactionType
+  category    String
+  date        DateTime
+  notes       String?
+  isDeleted   Boolean         @default(false)  // soft delete
+  userId      String
+  user        User            @relation(fields: [userId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}

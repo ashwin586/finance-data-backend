@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, {JsonWebTokenError, TokenExpiredError} from "jsonwebtoken";
 import AppError from "../utils/AppError";
 import { AuthRequest } from "../types/interface";
 
@@ -16,17 +16,27 @@ const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
     throw new AppError("No token provided", 401);
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
-    id: string;
-    role: string;
-  };
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      id: string;
+      role: string;
+    };
 
-  req.user = {
-    id: decoded.id,
-    role: decoded.role as any,
-  };
+    req.user = {
+      id: decoded.id,
+      role: decoded.role as any,
+    };
 
-  next();
+    next();
+  } catch (error) {
+    if (error instanceof TokenExpiredError) {
+      throw new AppError("Session has expired, please login again", 401);
+    }
+    if (error instanceof JsonWebTokenError) {
+      throw new AppError("Invalid token", 401);
+    }
+    throw new AppError("Authentication failed", 401);
+  }
 };
 
 export default authenticate;

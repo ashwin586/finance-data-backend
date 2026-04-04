@@ -36,16 +36,38 @@ export const getTransactionsController = async (
   req: AuthRequest,
   res: Response,
 ) => {
-  const { type, category, from, to } = req.query as {
+  const { type, category, from, to, search, page, limit } = req.query as {
     type?: string;
     category?: string;
     from?: string;
     to?: string;
+    search?: string;
+    page?: string;
+    limit?: string;
   };
-  const result = await getTransactionsService(type, category, from, to);
-  res
-    .status(200)
-    .json({ message: "Transactions fetched successfully", data: result });
+
+  const pageNumber = parseInt(page ?? "1");
+  const limitNumber = parseInt(limit ?? "10");
+
+  const result = await getTransactionsService(
+    type,
+    category,
+    from,
+    to,
+    search,
+    pageNumber,
+    limitNumber,
+  );
+  res.status(200).json({
+    message: "Transactions fetched successfully",
+    data: result.transactions,
+    meta: {
+      total: result.total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(result.total / limitNumber),
+    },
+  });
 };
 
 export const getTransactionByIdController = async (

@@ -30,23 +30,37 @@ export const getTransactionsService = async (
   category?: string,
   from?: string,
   to?: string,
+  search?: string,
+  page: number = 1,
+  limit: number = 10,
 ) => {
-  const transactions = await prisma.transaction.findMany({
-    where: {
-      isDeleted: false,
-      type: type ? (type as TransactionType) : undefined,
-      category: category ? category.toLowerCase() : undefined,
-      date: {
-        gte: from ? new Date(from) : undefined,
-        lte: to ? new Date(to) : undefined,
-      },
+  const where = {
+    isDeleted: false,
+    type: type ? (type as TransactionType) : undefined,
+    category: category ? category.toLowerCase() : undefined,
+    date: {
+      gte: from ? new Date(from) : undefined,
+      lte: to ? new Date(to) : undefined,
     },
-    orderBy: {
-      date: "desc",
-    },
-  });
+    ...(search && {
+      OR: [
+        { category: { contains: search, mode: "insensitive" as const } },
+        { notes: { contains: search, mode: "insensitive" as const } },
+      ],
+    }),
+  };
 
-  return transactions;
+  const [transactions, total] = await prisma.$transaction([
+    prisma.transaction.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.transaction.count({ where }),
+  ]);
+
+  return { transactions, total };
 };
 
 export const getTransactionByIdService = async (id: string) => {

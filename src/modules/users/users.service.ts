@@ -2,17 +2,39 @@ import { Role, Status } from "@prisma/client";
 import prisma from "../../config/db";
 import AppError from "../../utils/AppError";
 
-export const getAllUserService = async () => {
-  return await prisma.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      status: true,
-      createdAt: true,
-    },
-  });
+export const getAllUserService = async (
+  search?: string,
+  page: number = 1,
+  limit: number = 10,
+) => {
+  const where = {
+    ...(search && {
+      OR: [
+        { name: { contains: search, mode: "insensitive" as const } },
+        { email: { contains: search, mode: "insensitive" as const } },
+      ],
+    }),
+  };
+
+  const [users, total] = await prisma.$transaction([
+    prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        status: true,
+        createdAt: true,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.user.count({ where }),
+  ]);
+
+  return { users, total };
 };
 
 export const getUserByIdService = async (id: string) => {

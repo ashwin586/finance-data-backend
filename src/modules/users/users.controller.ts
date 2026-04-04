@@ -14,10 +14,26 @@ export const getAllUsersController = async (
   req: AuthRequest,
   res: Response,
 ) => {
-  const result = await getAllUserService();
-  return res
-    .status(200)
-    .json({ message: "Fetched all users successfully", data: result });
+  const { search, page, limit } = req.query as {
+    search?: string;
+    page?: string;
+    limit?: string;
+  };
+
+  const pageNumber = parseInt(page ?? "1");
+  const limitNumber = parseInt(limit ?? "10");
+
+  const result = await getAllUserService(search, pageNumber, limitNumber);
+  return res.status(200).json({
+    message: "Fetched all users successfully",
+    data: result.users,
+    meta: {
+      total: result.total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(result.total / limitNumber),
+    },
+  });
 };
 
 export const getUserByIdController = async (

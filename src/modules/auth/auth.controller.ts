@@ -5,10 +5,6 @@ import AppError from "../../utils/AppError";
 export async function registerController(req: Request, res: Response) {
   const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    throw new AppError("All fields are required", 400);
-  }
-
   const result = await registerService(name, email, password);
 
   res.status(201).json({
@@ -19,10 +15,6 @@ export async function registerController(req: Request, res: Response) {
 
 export async function loginController(req: Request, res: Response) {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    throw new AppError("All fields are required", 400);
-  }
 
   const result = await loginService(email, password);
 

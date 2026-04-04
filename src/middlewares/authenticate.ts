@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import jwt, {JsonWebTokenError, TokenExpiredError} from "jsonwebtoken";
 import AppError from "../utils/AppError";
 import { AuthRequest } from "../types/interface";

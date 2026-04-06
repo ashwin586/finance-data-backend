@@ -116,7 +116,7 @@ npx prisma db seed
 npm run dev
 ```
 
-Server runs at `http://localhost:3000`
+Server runs at `https://finance-data-backend-production.up.railway.app`
 
 ### Default Admin Credentials
 Email: admin@finance.com
@@ -125,7 +125,7 @@ Password: admin123
 ## API Documentation
 
 Swagger UI is available at:
-{baseURL}/api/docs
+`https://finance-data-backend-production.up.railway.app/api/docs/`
 
 ## API Endpoints
 

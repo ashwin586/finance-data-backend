@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { registerService, loginService } from "./auth.service";
-import AppError from "../../utils/AppError";
 
 export async function registerController(req: Request, res: Response) {
   const { name, email, password } = req.body;

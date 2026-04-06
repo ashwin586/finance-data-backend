@@ -1,4 +1,3 @@
-import { TransactionClient } from "./../../generated/prisma/internal/prismaNamespace";
 import { TransactionType } from "@prisma/client";
 import prisma from "../../config/db";
 import AppError from "../../utils/AppError";

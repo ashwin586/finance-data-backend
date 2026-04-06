@@ -36,6 +36,8 @@ A role-based finance records and dashboard API built with Node.js, TypeScript, E
 | Manage users | ❌ | ❌ | ✅ |
 
 ## Project Structure
+
+```
 src/
 ├── config/
 │   ├── db.ts              # Prisma client
@@ -69,6 +71,7 @@ src/
 ├── utils/
 │   └── AppError.ts        # Custom error class
 └── app.ts
+```
 
 ## Getting Started
 
